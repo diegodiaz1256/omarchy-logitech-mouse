@@ -1,0 +1,2 @@
+singleton MouseStore 1.0 MouseStore.qml
+MenuRow 1.0 MenuRow.qml
