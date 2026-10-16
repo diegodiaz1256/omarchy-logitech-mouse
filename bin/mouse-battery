@@ -168,6 +168,9 @@ def main(argv):
         out["percent"] = last.get("percent")
         out["charging"] = bool(last.get("charging"))
         out["last_seen"] = int(last.get("ts", 0) or 0)
+    # Heartbeat: proof that the poll ran, and what it saw, even when offline.
+    state["poll"] = {"ts": int(time.time()), "online": out["online"], "error": out["error"]}
+    save_state(state)
     print(json.dumps(out))
     return 0
 

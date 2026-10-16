@@ -81,16 +81,74 @@ Singleton {
   }
 
   function refresh() {
-    if (query.running) return
+    // A previous query that never ended (solaar wedged during an unplug) must
+    // not block every later poll: the watchdog below ends it, and a refresh
+    // that finds one older than the watchdog allows ends it too.
+    if (query.running) {
+      if (Date.now() - queryStarted < 45000) return
+      query.running = false
+    }
+    queryStarted = Date.now()
+    watchdog.restart()
     var cmd = [helper, "--device", deviceMatch]
     if (notifications && lowThreshold > 0) cmd = cmd.concat(["--notify-below", String(lowThreshold)])
     query.command = cmd
     query.running = true
   }
 
+  property double queryStarted: 0
+
   Process {
     id: query
     stdout: StdioCollector { onStreamFinished: root.apply(text) }
+    onExited: watchdog.stop()
+  }
+
+  // Backstop for a helper that hangs: it has its own 20 s timeout, so 45 s
+  // means something is badly wrong.
+  Timer {
+    id: watchdog
+    interval: 45000
+    onTriggered: {
+      if (query.running) query.running = false
+      if (!root.online) root.apply('{"online": false, "error": "no answer from the helper"}')
+    }
+  }
+
+  // A hotplug of the receiver (or a USB mouse) refreshes at once. The first
+  // answer after a replug can be slow or empty while the receiver re-enumerates,
+  // so look again a few times.
+  property int settleStep: 0
+  function hotplugged() {
+    settleStep = 0
+    settle.restart()
+  }
+
+  Timer {
+    id: settle
+    interval: 2000
+    repeat: false
+    onTriggered: {
+      root.refresh()
+      root.settleStep++
+      if (root.settleStep < 4 && !root.online) {
+        settle.interval = root.settleStep === 1 ? 5000 : 15000
+        settle.restart()
+      } else {
+        settle.interval = 2000
+      }
+    }
+  }
+
+  Process {
+    id: udevWatch
+    running: true
+    command: ["udevadm", "monitor", "--udev", "--subsystem-match=hidraw", "--subsystem-match=usb"]
+    stdout: SplitParser {
+      onRead: function(line) {
+        if (/ (add|remove|bind|unbind) /.test(line)) root.hotplugged()
+      }
+    }
   }
 
   Timer {
