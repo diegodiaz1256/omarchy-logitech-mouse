@@ -133,7 +133,9 @@ def main(argv):
         text = err = ""
     if not out["error"]:
         reading = parse(text)
-        if "no device found" in err or not reading["name"]:
+        if "No supported device found" in err:
+            out["error"] = "no receiver or mouse connected"
+        elif "no device found" in err or not reading["name"]:
             out["error"] = "no device matching '%s'" % device
         elif reading["percent"] is None:
             out["ok"] = True

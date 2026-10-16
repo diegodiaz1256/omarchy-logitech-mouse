@@ -6,8 +6,12 @@
   "author": "Diego Fernandez Diaz",
   "description": "Battery of a wireless Logitech mouse in the bar, with Piper one click away",
   "license": "MIT",
-  "kinds": ["bar-widget"],
-  "entryPoints": { "barWidget": "Panel.qml" },
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "Panel.qml"
+  },
   "barWidget": {
     "displayName": "Logitech Mouse",
     "description": "Mouse battery from Solaar, a low-battery notification, and a shortcut to Piper and Solaar",
@@ -19,14 +23,84 @@
       "refreshIntervalSec": 180,
       "lowThreshold": 15,
       "notifications": "on",
-      "showPercent": "on"
+      "showPercent": "on",
+      "whenDisconnected": "hide"
     },
     "schema": [
-      { "key": "deviceMatch", "type": "string", "label": "Device name (part of it)", "defaultValue": "G502", "description": "Which Solaar device to read, matched on its name." },
-      { "key": "refreshIntervalSec", "type": "integer", "label": "Refresh interval (seconds)", "min": 60, "max": 3600, "step": 30, "defaultValue": 180 },
-      { "key": "lowThreshold", "type": "integer", "label": "Low battery at (%)", "min": 0, "max": 50, "step": 5, "defaultValue": 15, "description": "0 turns the low battery notification off." },
-      { "key": "notifications", "type": "enum", "label": "Low battery notification", "options": [{ "value": "on", "label": "On" }, { "value": "off", "label": "Off" }], "defaultValue": "on" },
-      { "key": "showPercent", "type": "enum", "label": "Percentage in the bar", "options": [{ "value": "on", "label": "On" }, { "value": "off", "label": "Off" }], "defaultValue": "on" }
+      {
+        "key": "deviceMatch",
+        "type": "string",
+        "label": "Device name (part of it)",
+        "defaultValue": "G502",
+        "description": "Which Solaar device to read, matched on its name."
+      },
+      {
+        "key": "refreshIntervalSec",
+        "type": "integer",
+        "label": "Refresh interval (seconds)",
+        "min": 60,
+        "max": 3600,
+        "step": 30,
+        "defaultValue": 180
+      },
+      {
+        "key": "lowThreshold",
+        "type": "integer",
+        "label": "Low battery at (%)",
+        "min": 0,
+        "max": 50,
+        "step": 5,
+        "defaultValue": 15,
+        "description": "0 turns the low battery notification off."
+      },
+      {
+        "key": "notifications",
+        "type": "enum",
+        "label": "Low battery notification",
+        "options": [
+          {
+            "value": "on",
+            "label": "On"
+          },
+          {
+            "value": "off",
+            "label": "Off"
+          }
+        ],
+        "defaultValue": "on"
+      },
+      {
+        "key": "showPercent",
+        "type": "enum",
+        "label": "Percentage in the bar",
+        "options": [
+          {
+            "value": "on",
+            "label": "On"
+          },
+          {
+            "value": "off",
+            "label": "Off"
+          }
+        ],
+        "defaultValue": "on"
+      },
+      {
+        "key": "whenDisconnected",
+        "type": "enum",
+        "label": "When the mouse is not connected",
+        "options": [
+          {
+            "value": "hide",
+            "label": "Hide the widget"
+          },
+          {
+            "value": "grey",
+            "label": "Show greyed, with the last percentage"
+          }
+        ],
+        "defaultValue": "hide"
+      }
     ]
   }
 }

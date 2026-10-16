@@ -4,7 +4,7 @@ The battery of a wireless Logitech mouse in the Omarchy bar, and a shortcut to [
 
 ## Features
 
-- Mouse icon and battery percentage in the bar. Accent colour while charging, urgent colour at or below the low threshold, greyed when the mouse is off or out of range (the last known percentage stays visible).
+- Mouse icon and battery percentage in the bar. Accent colour while charging, urgent colour at or below the low threshold, hidden when the mouse is off, unplugged or out of range (optionally greyed with the last percentage instead).
 - Tooltip: device name, percentage, charging state and time of the last update.
 - Left click opens Piper (the distro package, or the Flatpak if that is what is installed).
 - Right click opens a small menu: Open Piper, Open Solaar, Refresh.
@@ -34,6 +34,7 @@ Once it lives in a git repository, `omarchy plugin add <git-url> --enable` works
 | Refresh interval | 180 s | 60 to 3600. |
 | Low battery at | 15 % | 0 turns the notification off. |
 | Low battery notification | On | |
+| When the mouse is not connected | Hide | Hide the widget, or show it greyed with the last percentage. It looks again every minute while away. |
 | Percentage in the bar | On | Icon only when off. Vertical bars always show the icon only. |
 
 ## Tests

@@ -20,6 +20,10 @@ Panel {
 
   readonly property bool vertical: bar ? bar.vertical : false
   property bool showPercent: true
+  // "hide" (default) removes the widget while the mouse is not connected;
+  // "grey" keeps it with the last known percentage.
+  property string whenDisconnected: "hide"
+  readonly property bool shown: MouseStore.online || (whenDisconnected === "grey" && MouseStore.loaded)
 
   // Disconnected or unknown: greyed. Low: urgent. Charging: accent.
   readonly property color barIconColor: {
@@ -36,8 +40,10 @@ Panel {
   readonly property int barSlot: barContentWidth + Style.space(10)
   readonly property real openPanelIndicatorWidth: barContentWidth
   readonly property real openPanelIndicatorHeight: Style.bar.iconFont
-  implicitWidth: vertical ? (bar ? bar.barSize : Style.bar.sizeHorizontal) : barSlot
-  implicitHeight: vertical ? barSlot : (bar ? bar.barSize : Style.bar.sizeHorizontal)
+  // Hidden means no space at all, not just no paint.
+  visible: shown
+  implicitWidth: !shown ? 0 : (vertical ? (bar ? bar.barSize : Style.bar.sizeHorizontal) : barSlot)
+  implicitHeight: !shown ? 0 : (vertical ? barSlot : (bar ? bar.barSize : Style.bar.sizeHorizontal))
 
   Text {
     id: measure
@@ -54,6 +60,7 @@ Panel {
     MouseStore.lowThreshold = Number(root.setting("lowThreshold", 15))
     MouseStore.notifications = String(root.setting("notifications", "on")) !== "off"
     root.showPercent = String(root.setting("showPercent", "on")) !== "off"
+    root.whenDisconnected = String(root.setting("whenDisconnected", "hide")) === "grey" ? "grey" : "hide"
   }
 
   // The host assigns settings after construction, so read them on change too.

@@ -94,7 +94,8 @@ Singleton {
   }
 
   Timer {
-    interval: Math.max(60, root.refreshIntervalSec) * 1000
+    // Look again sooner while the mouse is away, so it reappears promptly.
+    interval: Math.max(60, root.online || !root.loaded ? root.refreshIntervalSec : Math.min(root.refreshIntervalSec, 60)) * 1000
     running: true
     repeat: true
     triggeredOnStart: true
