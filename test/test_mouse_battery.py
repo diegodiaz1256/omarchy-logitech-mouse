@@ -27,6 +27,11 @@ class Parse(unittest.TestCase):
         self.assertEqual((r["name"], r["percent"], r["charging"], r["status"]),
                          ("G502 X PLUS", 77, True, "recharging"))
 
+    def test_through_receiver(self):
+        r = mb.parse("solaar version 1.1.20\n\n  1: G502 X PLUS\n     Kind : mouse\n"
+                     "         6: UNIFIED BATTERY {1004} V3\n            Battery: 98%, BatteryStatus.DISCHARGING.\n")
+        self.assertEqual((r["name"], r["percent"], r["charging"]), ("G502 X PLUS", 98, False))
+
     def test_discharging(self):
         r = mb.parse("G502\n  Battery: 40%, BatteryStatus.DISCHARGING.\n")
         self.assertEqual((r["percent"], r["charging"]), (40, False))

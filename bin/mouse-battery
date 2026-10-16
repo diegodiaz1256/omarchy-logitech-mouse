@@ -56,9 +56,20 @@ def parse(text):
     """Turn `solaar show` output into a reading. Pure, so it can be tested."""
     name = ""
     for line in text.splitlines():
-        if line.strip() and not line[0].isspace() and not line.lower().startswith(("solaar", "rules", "warning")):
+        if not line.strip() or line.lower().startswith(("solaar", "rules", "warning")):
+            continue
+        # Over a cable the device name starts the output; through a receiver it
+        # is an indented "  1: NAME" entry.
+        paired = re.match(r"^\s{0,4}\d+:\s+(\S.*)$", line)
+        if paired:
+            name = paired.group(1).strip()
+            break
+        if not line[0].isspace():
             name = line.strip()
             break
+    if not name:
+        found = re.search(r"^\s*(?:Codename|Name)\s*:\s*(\S.*)$", text, re.M)
+        name = found.group(1).strip() if found else ""
     battery = re.search(r"^\s*Battery:\s*(.+)$", text, re.M)
     reading = {"name": name, "percent": None, "level": "", "status": "", "charging": False}
     if not battery:
@@ -135,7 +146,7 @@ def main(argv):
         reading = parse(text)
         if "No supported device found" in err:
             out["error"] = "no receiver or mouse connected"
-        elif "no device found" in err or not reading["name"]:
+        elif "no device found" in err or (not reading["name"] and reading["percent"] is None):
             out["error"] = "no device matching '%s'" % device
         elif reading["percent"] is None:
             out["ok"] = True
